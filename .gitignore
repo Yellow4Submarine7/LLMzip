@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+venv/
+ENV/
+
+# Next.js
+.next/
+out/
+node_modules/
+.DS_Store
+*.pem
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Large model files and datasets
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.model
+*.data
+datasets/
+
+# Logs
+logs/
+*.log
+
+# Coverage reports
+.coverage
+coverage/
+htmlcov/
+
+# Local development configuration
+.env*
+config.local.js
+
+**.gpz
+**.txt
+/finetuned_models
+/layer_experiments/pruned_models
+
+# Temporary files
+*.tmp
+*.temp
+
+# Model checkpoints
+checkpoints/
+
+# Experimental results
+results/
+experiments/
+
+# System files
+Thumbs.db
+desktop.ini
+
+# Compression files
+*.zip
+*.rar
+*.7z

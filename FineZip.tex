@@ -1,0 +1,630 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+%\usepackage[review]{acl}
+\usepackage{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+% This is also not strictly necessary, and may be commented out.
+% However, it will improve the aesthetics of text in
+% the typewriter font.
+\usepackage{inconsolata}
+
+%Including images in your LaTeX document requires adding
+%additional package(s)
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{float}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+\title{\texttt{FineZip} : Pushing the Limits of Large Language Models for \\ Practical Lossless Text Compression}
+
+%\title{On Possibilities and Limitations of Large Language Models\\ for Lossless Text Compression}
+
+%\title{On Viability of using Large Language Models\\ for Lossless Text Compression}
+
+% Author information can be set in various styles:
+% For several authors from the same institution:
+% \author{Author 1 \and ... \and Author n \\
+%         Address line \\ ... \\ Address line}
+% if the names do not fit well on one line use
+%         Author 1 \\ {\bf Author 2} \\ ... \\ {\bf Author n} \\
+% For authors from different institutions:
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \And  ... \And
+%         Author n \\ Address line \\ ... \\ Address line}
+% To start a separate ``row'' of authors use \AND, as in
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \AND
+%         Author 2 \\ Address line \\ ... \\ Address line \And
+%         Author 3 \\ Address line \\ ... \\ Address line}
+
+\author{Fazal Mittu$^1$, Yihuan Bu$^1$, Akshat Gupta$^1$, Ashok Devireddy$^1$, Alp Eren Ozdarendeli$^1$, \\
+\textbf{Anant Singh$^2$, Gopala Anumanchipalli$^1$}\\
+$^1$UC Berkeley, $^2$NYU\\
+  \small{
+   \href{akshat.gupta@berkeley.edu}{akshat.gupta@berkeley.edu}
+  }
+}
+
+%\author{
+%  \textbf{First Author\textsuperscript{1}},
+%  \textbf{Second Author\textsuperscript{1,2}},
+%  \textbf{Third T. Author\textsuperscript{1}},
+%  \textbf{Fourth Author\textsuperscript{1}},
+%\\
+%  \textbf{Fifth Author\textsuperscript{1,2}},
+%  \textbf{Sixth Author\textsuperscript{1}},
+%  \textbf{Seventh Author\textsuperscript{1}},
+%  \textbf{Eighth Author \textsuperscript{1,2,3,4}},
+%\\
+%  \textbf{Ninth Author\textsuperscript{1}},
+%  \textbf{Tenth Author\textsuperscript{1}},
+%  \textbf{Eleventh E. Author\textsuperscript{1,2,3,4,5}},
+%  \textbf{Twelfth Author\textsuperscript{1}},
+%\\
+%  \textbf{Thirteenth Author\textsuperscript{3}},
+%  \textbf{Fourteenth F. Author\textsuperscript{2,4}},
+%  \textbf{Fifteenth Author\textsuperscript{1}},
+%  \textbf{Sixteenth Author\textsuperscript{1}},
+%\\
+%  \textbf{Seventeenth S. Author\textsuperscript{4,5}},
+%  \textbf{Eighteenth Author\textsuperscript{3,4}},
+%  \textbf{Nineteenth N. Author\textsuperscript{2,5}},
+%  \textbf{Twentieth Author\textsuperscript{1}}
+%\\
+%\\
+%  \textsuperscript{1}Affiliation 1,
+%  \textsuperscript{2}Affiliation 2,
+%  \textsuperscript{3}Affiliation 3,
+%  \textsuperscript{4}Affiliation 4,
+%  \textsuperscript{5}Affiliation 5
+%\\
+%  \small{
+%    \textbf{Correspondence:} \href{mailto:email@domain}{email@domain}
+%  }
+%}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+%The language modeling objective has also been shown to be equivalent to optimizing for text compression. 
+While the language modeling objective has been shown to be deeply connected with compression, it is surprising that modern LLMs are not employed in practical text compression systems. In this paper, we provide an in-depth analysis of neural network and transformer-based compression techniques to answer this question. We compare traditional text compression systems with neural network and LLM-based text compression methods. Although LLM-based systems significantly outperform conventional compression methods, they are highly impractical. Specifically, LLMZip, a recent text compression system using Llama3-8B requires 9.5 days to compress just 10 MB of text, although with huge improvements in compression ratios. To overcome this, we present \texttt{FineZip} - a novel LLM-based text compression system that combines ideas of online memorization and dynamic context to reduce the compression time immensely. \texttt{FineZip} can compress the above corpus in approximately 4 hours compared to 9.5 days, a 54 times improvement over LLMZip and comparable performance. \texttt{FineZip} outperforms traditional algorithmic compression methods with a large margin, improving compression ratios by approximately 50\%. With this work, we take the first step towards making lossless text compression with LLMs a reality. While  \texttt{FineZip} presents a significant step in that direction, LLMs are still not a viable solution for large-scale text compression. We hope our work paves the way for future research and innovation to solve this problem. 
+
+%performs text compression in three steps. It starts with an online memorization step where an LLM is fine-tuned on the corpus being compressed using PEFT methods. This is followed by an offline compression step to generate optimized ranks for the text corpus. The generated ranks are further compressed using an algorithmic compression methods. We also improve on naive autoregressive generation and allow for dynamic context and quantization which immensely reduces the compression time. 
+
+%While neural network and LLM based compression systems report exceptional compression rates, we also present experiments to show that in their current form, they are not viable solutions for text compression as the amount of time required to compress and decompress data using LLMs is unprecedentedly large when compared to traditional compression methods. This highlights a significant drawback and potential opportunities for future research. 
+\end{abstract}
+
+% \begin{figure*}[ht]
+%     \centering
+%     \includegraphics[width=\textwidth]{LLMZip.png} % Adjust the width as needed
+%     \centering
+%     \caption{LLMZip Diagram}
+%     \centering
+%     \label{fig:example}
+%     \centering
+% \end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{finezip_diagram.png} % Adjust the width as needed
+    \centering
+    \caption{System diagram for \texttt{FineZip}.}
+    \centering
+    \label{fig:system}
+    \centering
+\end{figure*}
+
+\section{Introduction}
+While the relationship between language modeling and compression has long been known \citep{sequential, mahoney2000fast, goyal2018deepzip, Bellard2019LosslessDC}, recent works \citep{delétang2024language, huang2024compression} have reinforced this connection. \citet{delétang2024language} recently showed large language models (LLMs) can be used to compress data from various modalities. \citet{huang2024compression} followed up this work by showing that increasing compression abilities of LLMs is linearly correlated to downstream task performance. 
+
+%The connection between language modeling and compression becomes intuitive when we take a deeper look at the language modeling objective, implemented using a cross entropy loss. It aims to make each token in the training data the most probable token given the context preceding it, thus minimizing the number of bits required to represent the ranking of the token in the vocabulary list. 
+
+Previous works have exploited this connection for lossless text compression. Neural network based models have been implemented for text compression \citep{sequential,mahoney2000fast, goyal2018deepzip} and have reached better compression performance than traditional algorithmic compressors such as gzip. More recent methods have explored using LSTM and transformer models \citep{Bellard2019LosslessDC,Bellard2021NNCPVL}. These methods fall under the "online" compressors category, where a randomly initialized model is directly trained on the data being compressed. In this case, the model parameters also become part of the compression. A recent effort, LLMZip \citep{valmeekam2023llmzip}, tested the use of LLMs for lossless compression. Given an LLM's ability to predict the next token provided a fixed-length context window, a tokenized text can be stored as probabilistic ranks produced by an LLM predicting the next token. This is a type of "offline" compression, with a fixed system used for both compression and decompression of all incoming text.
+
+%LLMZip then further compressed these ranks with the use of arithmetic coding, a popular entropy encoding technique. 
+
+
+%Building on the success of neural networks and transformers in the realm of data compression, previous studies \citep{delétang2024language} have demonstrated that compression with language models can achieve competitive compression rates across different modalities. Notably, prior works \citep{huang2024compression} found a linear relationship between a model's capabilities and compression ability, suggesting that compression capability may represent a level of intelligence.
+
+%Large Language Models (LLMs) have been tied to information theory and lossless compression for some time now \citep{delétang2024language}. These predictive models are inherently equipped for compression as their main task of next token prediction requires them to losslessly encode and store information. Prior to LLMs, neural networks have been implemented for text compression \citep{sequential,mahoney2000fast} and have reached better compression performance than common Lempel-Ziv compressors, such as gzip or compress, while also being practical in terms of time and memory. While some methods \citep{goyal2018deepzip} involve LSTMs and other recurrent neural networks, newer methods have explored using transformers models \citep{Bellard2019LosslessDC,Bellard2021NNCPVL} to achieve a lossless data compression.
+
+%Some recent work \citep{gilbert2023semantic} focused on semantic compression – prioritizing recovering data semantically close to the original input rather than exact recovery – showing that LLMs can achieve more efficient compression than traditional compression techniques but not be able to exactly replicate the original input. 
+
+%A recent effort, LLMZip \citep{valmeekam2023llmzip} further explored and tested the use of LLMs for lossless compression. Given an LLM's ability to predict the next token provided a fixed-length context window, a tokenized text can be stored as probabilistic ranks produced by an LLM predicting the next token with a sliding context window across the sequence. LLMZip then further compressed these ranks with the use of arithmetic coding, a popular entropy encoding technique. 
+
+In this paper, we build on prior work and introduce \texttt{FineZip}, which uses LLMs for lossless text compression with both online and offline components. \texttt{FineZip} combines an "online" component, which memorizes the data being compressed, with an "offline" component in the form of pre-trained LLMs for compression. The "online" memorization is done by fine-tuning the model on the data being compressed in a parameter-efficient way \citep{hu2021lora, dettmers2023qlora} with an additional constant overhead of the learned embeddings during fine-tuning. The "offline" component of the system is the pre-trained LLM which remains fixed across different corpora. Figure \ref{fig:system} depicts the system diagram for \texttt{FineZip}. With this approach, we can leverage the benefits of online compression for improved performance without the drawback of requiring additional storage for model parameters. 
+
+Additionally, with \texttt{FineZip} we allow for a dynamic context where each token being compressed has a context size of equal to its position in a sentence. This allows us to batch compression and decompression steps using LLMs, allowing for significant speed-up. "Online memorization" using PEFT methods also allows the model to compensate for loss of performance due to a dynamic context, while a dynamic context allows for batching which allows compression and decompression of many batches of text in parallel within a fixed compute budget. With \texttt{FineZip}, we can achieve 54 times faster compression times with minor loss of performance when compared to LLMZip, still outperforming traditional text compression methods by a huge margin. Our work also shows that compression rates of LLM-based methods are still not low enough for practical use cases, and although \texttt{FineZip} pushes the limits of using LLMs lossless text compression in practice, much work still needs to be done. The code for our work can be found here - \url{https://github.com/fazalmittu/FineZip}.
+
+
+
+
+%Figure \ref{fig:system} depicts the system diagram for \texttt{FineZip}. We also evaluate the practical viability of LLMs as text compressors. With several experiments, we show that the large compression and decompression times make LLMs impractical for lossless text compression. The code for our work can be found here - \url{https://github.com/FinetunedZip/FinetunedZip}. 
+
+%which adds a fine-tuning step prior to compression to improve the LLM's ability to accurately predict the next word in a text file. We believe that this fine-tuning step can reduce the ranks further than a base model, resulting in better compression. In addition to improving the compression, we are also interested in the overall viability of an LLM based text compressor. We measure the viability of the system based on 2 metrics: compression ratio and time to compress and decompress. This paper aims to identify the upper bound of compression with LLMs and determine if we can make LLM compression more practical for everyday use. %LLMZip and NNCP \citep{Bellard2021NNCPVL} are the top LLM compression techniques but take approximately 3 days to compress a 100 megabyte file. While their compression is outstanding, waiting 3 days for a compression task to complete is not optimal. 
+
+\section{Introducing \texttt{FineZip}}
+
+The most basic form of compression using LLMs would be to tokenize the input text. Since each character in a word occupies 8 bits (1 byte in UTF-8 encoding), representing the word as a token, essentially converting it into a number, will almost always reduce the number of bytes needed to represent it. This connection was also observed in \citet{delétang2024language}. As a next step, we can use the predictive capabilities of LLMs for compression. This idea is used in LLMZip \cite{valmeekam2023llmzip} where they use a pre-trained LLM for text compression. The connection between language modeling and compression becomes intuitive when we take a deeper look at the language modeling objective, implemented using a cross-entropy loss. It aims to make each token in the training data the most probable token given the context preceding it, thus minimizing the number of bits required to represent the rank of the token in the vocabulary list, when ranked in descending order according to their probability.  Following this line of thought, we propose an intuitive yet effective way of enhancing this - fine-tuning the model on the data being compressed.
+
+% The fundamental principle behind compression with LLMs is to reduce the number of bits required to represent each word in input text. As each input word is encoded using the ranks of that word given a preceding context, the problem boils down to minimizing the rank of the words in the corpus being compressed. This is equivalent to making each word in the corpus more likely. 
+
+%The second and better compression technique is LLMZip \citep{valmeekam2023llmzip}, where the LLM's predictive capabilities are taken advantage of. An LLM should be able to predict the next token given some context with decently high accuracy, and the correct word token should almost always be within the LLM's top choices. 
+
+%Given an array of numbers, the goal of compression effectively becomes to reduce all these numbers down to 0 or 1 since those values take the least number of bits to store. The problem we are solving has effectively become a rank minimization problem in terms of minimizing the rank of the word in the text in the logit of the LLM, where the objective is to optimize our LLM to make each word more likely.
+
+
+A challenge towards fine-tuning modern LLMs is that they are memory-intensive. Additionally, if we fine-tune the entire model on the text being compressed, then the entire LLM becomes part of the compression, requiring an additional space equal to the space required to store the model for decompression. Thus, we propose \texttt{FineZip}, a compression framework that involves parameter-efficient fine-tuning (PEFT) \citep{peft} on the input text as an "online" step prior to compression. We call this the "online memorization" step which makes the data being compressed more probable for the LLM. This fine-tuning is implemented using LoRA \cite{hu2021lora} and is much faster than full fine-tuning, requires much less GPU memory, and requires a very small amount of additional storage for the trained embeddings. The additional embedding storage does not scale with the dataset being compressed and becomes negligible at large sizes of corpora. 
+
+% \noindent % Avoid indenting the first line
+% \textbf{LLMZip:} \\
+% \noindent Context for $x_i$:
+% \[
+% \{ x_{i-M}, x_{i-M+1}, \dots, x_{i-1} \} \quad \text{(Fixed size \( M \))}
+% \]
+
+% \vspace{10pt} % Adds space between the two descriptions
+
+% \noindent \textbf{FineZip:} \\
+% \noindent Context for $x_i$:
+% \[
+% \{ x_1, x_2, \dots, x_{i-1} \} \quad \text{(Dynamic size)}
+% \]
+
+% \noindent % Avoid indenting the paragraph
+
+Another key difference between LLMZip and \texttt{FineZip} is that \texttt{FineZip} adopts a dynamic context size approach rather than maintaining a fixed sliding window. LLMZip uses a permanent sliding window approach, where the rank of each token produced has a fixed context window of a preset context size (512 as chosen by original authors). This by design makes the compression process extremely autoregressive and non-parallelizable, as to produce the rank of a token, you need the previous 512 tokens. 
+
+\vspace{0.2cm}
+
+\noindent \texttt{FineZip} overcomes this limitation by employing a two-step dynamic context window technique:
+\begin{enumerate}
+    \item Divide the corpus into chunks of a pre-decided window length.
+    \item Produce the ranks of each token within the window such that the rank for the $i^{th}$ token is produced based on the tokens preceding it
+\end{enumerate}
+
+%\vspace{0.1cm}
+The dynamic context window gives a variable context size to each token in a chunk. For a uniform comparison, we use a chunking size of 512 in \texttt{FineZip}, which is the same as the context window size chosen by LLMZip. In \texttt{FineZip}, the $i^{th}$ token in a chunk has a context size of $i-1$, thus only the final token in a chunk has access to full context length of 512. In contrast, every token in LLMZip has access to the full context length of 512. The dynamic context leads to some loss of performance, which is made up for by online memorization.
+
+%Because of LLMZip's sliding window, compression/decompression take a very long time. As we will see in coming sections, dynamic context size allows for significant speed ups in compression time. For \texttt{FineZip} experiments, we adopt a context size of 512, similar to LLMZip (Appendix: \ref{sec:context_size}). The dynamic context leads to some loss of performance, which is made up by online memorization.
+
+% LLMZip employs a fixed context window that slides across the entire text file being compressed. The idea is that each token being compressed has the same number of tokens in its context. This is in contrast to the dynamic context size approach in which the input text is broken into batches of equal length, and each token in the batch uses just the preceding tokens in the batch as its context. This allows us to do divide the text being compressed into chunks and compress and decompress multiple chunks in parallel, thus enabling batching. Because of LLMZip's sliding window, compression/decompression take a very long time. As we will see in coming sections, dynamic context size allows for significant speed ups in compression time. For \texttt{FineZip} experiments, we adopt a context size of 512, similar to LLMZip (Appendix: \ref{sec:context_size}). The dynamic context leads to some loss of performance, which is made up by online memorization.
+
+
+    
+
+%To summarize, \texttt{FineZip} adds two significant changes to LLMZip:
+
+
+%During a decompression step, each new token we decode is added to the context for predicting the next token.
+
+%We also choose to further compress the ranks that we store using bz2 \citet{bzip2} instead of zlib \cite{zlib} used in LLMZip because it gave us the best performance based on initial tests (Appendix: \ref{sec:traditional}).
+
+% divide the document into chunks of 512 tokens at a time similar to \citet{valmeekam2023llmzip}. 
+
+
+%Fine-tuning pre-trained models is known to achieve better performance for downstream tasks \citep{dodge2020finetuning,hu2021lora,dettmers2023qlora}. Something to note is that fine-tuning a model for a large number of epochs makes it susceptible to overfitting \citep{li2021improved}; however, this is actually beneficial in our case. Fitting the model to our input file makes the input sequence more probable within the model, effectively reducing the rank values. We also acknowledge that storing the fine-tuned weights takes up some space, but it is a constant value that becomes almost negligible for larger file sizes.
+
+
+
+\section{Experiments}
+% % 
+We begin by comparing \texttt{FineZip} with (i) traditional text compression methods - bzip2 \cite{bzip2}, zlib \cite{zlib}, and gzip \cite{gzip}, (ii) neural network based text compression methods - NNCP \cite{Bellard2021NNCPVL}, and the (iii) recent LLM-based text compression method called LLMZip. For both  \texttt{FineZip} and LLMZip, we use Llama-3 8B \cite{llama3}.
+
+\paragraph{Modifications to LLMZip:} LLMZip originally used Llama-1-7B \cite{llama1} while we leverage Llama-3-8B for both LLMZip and \texttt{FineZip} for uniform comparison. Additionally, LLMZip used two methods for compression - one using arithmetic coding (AC) and the other using a secondary compression methods on generated ranks. LLMZip uses zlib \cite{zlib} as a secondary compression method over ranks whereas our experiments show that bzip2 provides a much better compression ratio (Appendix: \ref{sec:traditional}). Thus, we use bzip2 as our secondary compression method for LLM ranks in both LLMZip and \texttt{FineZip}. We also refer to bzip2 as the baseline for text compression using traditional compression methods (Table \ref{tab:compression_methods}). To offer a better comparison, we also create a version of \texttt{FineZip} that incorporates arithmetic coding. The process uses the logits that the LLM outputs for each new token as the probability distribution update for the arithmetic coding scheme.% We improve LLMZip’s limitation of single batch encoding by enabling batch compression and decompression. The process is achieved by first truncating the whole compressed text into parts, and encoding them in parallel, creating separate compressed files for each part of the text. This method enables parallel compression as well as parallel decompression.
+
+\begin{table}
+\small
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Method} & \textbf{Compression Ratio} & \textbf{Time (min)} \\ \hline
+zlib& 0.3251&0.0083\\\hline
+gzip& 0.3238&0.0141\\\hline
+bzip2& 0.2374&0.0437\\\hline
+NNCP & 0.15021 & 251 \\ \hline
+LLMZip (AC)& 0.0795& 13571\\ \hline  % placeholder
+LLMZip & 0.1163& 13651\\ \hline
+\texttt{Finezip} (AC) & 0.0797&13118\\\hline
+\textbf{\texttt{Finezip}} & \textbf{0.12799} & \textbf{250} \\\hline
+\texttt{Finezip}-4bit & 0.1445 & 67 \\\hline
+%\texttt{Finezip} & 0.13711&249\\\hline
+
+\end{tabular}
+\caption{Comparison of Compression Methods on 10mb}
+\label{tab:compression_methods}
+\end{table}
+
+
+
+
+We used the first 10mb of the enwik8 \cite{enwik8} dataset which is a standard benchmark for compression tasks. Though compression ratio (ratio of compressed file size and original file size) is the key metric, we are also interested in measuring time taken by these compression systems to evaluate practicality. The results are shown in Table \ref{tab:compression_methods}. The first key observation is that neural network and LLM based compression methods have significantly better compression ratios than traditional text compression methods (zlib, gzip, bzip2), thus highlighting the potential impact of these methods for text compression. The second key observation is that neural network and LLM based methods takes a long time to compress even small amounts of text, thus preventing their use in practice. This is especially true when using AC for compression in LLM-based methods, which produces exceptional compression ratios but also requires unprecedentedly large amounts of time. For LLMZip with AC, the time taken to compress 10MB of data is approximately 9.5 days. Thus, we do not explore AC-based LLM compression further and strictly compare only rank-based LLM baselines.
+
+\setlength{\belowcaptionskip}{-10pt}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{ablations_new.png} % Adjust the width as needed
+    \centering
+    \caption{\texttt{FineZip} ablations for different fine-tune epochs}
+    \centering
+    \label{fig:finetune-lora}
+    \centering
+\end{figure}
+
+Table \ref{tab:compression_methods} shows that \texttt{FineZip} is able to achieve comparable or better compression ratios than both NNCP and LLMZip with a much faster compression time. Specifically, we see that \texttt{FineZip} has a much better compression ratio than NNCP with comparable amount of compression time, while the 4-bit quantized \texttt{FineZip} is approximately 4 times faster than NNCP and still exhibits a better compression ratio. \texttt{FineZip} compresses enwik8 within 4 hours, compared to approximately 227 hours taken by LLMZip. This is a 54x improvement on compression time with a minor drop of 1 percentage point in compression ratio. %This is purely due to introduction of the dynamic context during compression and decompression which allows for batching. 
+
+% Here, \texttt{FineZip} is a combination of online memorization and dynamic context. We add numbers for 4-bit quantized models separately. 
+
+
+%We can also see that LLM based methods achieves much better compression than conventional compression methods such as bzip2 and gzip. It's also important to realize that the dynamic context size allows \texttt{FineZip} to encode 16 batches at a time unlike LLMZip which can only compress with a batch size of 1, leading to a significant time improvement when dealing with rank based compression. 
+
+%(For \texttt{FineZip}, the fintuning embedding size is not included as it does not scale with dataset size.)
+
+%Table \ref{tab:compression_methods} also shows that arithmetic coding achieves better compression ratios than ranked based compression. However, the compression time for \texttt{FineZip} with arithmetic coding is almost 50 times longer than rank based compression, making it impractical to explore further.
+
+%Overall, though these techniques do achieve state of the art compression ratios, they are highly impractical as the fastest technique takes over 4 hours just to compress 10 megabytes. 
+
+
+
+
+
+\subsection{\texttt{FineZip} Ablations}
+%In this section, we present the effect of fine-tuning and quantization on the performance of FineZip. 
+
+\texttt{FineZip} uses an "online memorization step" as shown in Figure \ref{fig:system} before performing compression. This is done using Low-Rank Adaptation (LoRA) \citep{hu2021lora}. We compare the effect of fine-tuning on compression using 3 different language models: GPT2-XL 1.3B \cite{gpt-2}, LLama-2 7B \cite{llama2}, and LLama-3 8B \cite{llama3}. We see that for each model, memorization improves the absolute compression ratio by at least 1 percentage point or a relative improvement of about 8\% over its non-fine-tuned baseline as shown in Figure \ref{fig:finetune-lora}. This is significant especially when dealing with such low compression rates. It should be noted that the time taken for memorization is negligible compared to compression time and can be ignored.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.85\linewidth]{quantBS.png} % Adjust the width as needed
+    \centering
+    \caption{Compressing 10mb dataset with LLama-3 8B loaded with 4, 8, 16, and 32-bit precision. Purple bar shows compression ratio, red line shows time taken to compress. Each batch size was chosen to max out memory on a 48GB GPU.}
+    \centering
+    \label{fig:quantization}
+    \centering
+\end{figure}
+
+
+
+%The past few experiments have shown that in terms of compression ratio, neural network/transformer based compression systems are viable. However, they are still impractical in terms of time. One significant time upgrade we made was the aforementioned dynamic context window which allowed for batched encoding. With full precision models, we were only able to use a batch size of 16. 
+
+\paragraph{Quantization:} We saw in Table \ref{tab:compression_methods} that dynamic context helps speed up the compression process by significant amounts, while online memorization is able to mitigate the loss in performance. We further push the limits of compression time using quantization. We perform the memorization step using QLoRA \cite{dettmers2023qlora} and perform compression using the quantized model. We do this using a fixed compute budget of 48GB GPU memory on a single NVIDIA A6000 GPU. Lower precision models will allow us to increase batch size and in turn, decrease time needed to compress a file by a sizable amount. Figure \ref{fig:quantization} shows that fine-tuning/compressing a 4 bit model allows us to fit a batch size of 70 on one A6000 GPU and achieve a compression time of 67 minutes. This 4x speed up makes \texttt{FineZip} not only a competitive compressor out-performning traditional text compression systems by a huge margin, but also the fastest neural network/transformer based compression currently available.
+
+
+%Loading these full precision models ended up taking up significant amounts of GPU memory which ultimately took away from the amount of memory we could use while actually compressing.  Since lower precision models have been shown to have comparable performance to full precision models, we decided to try quantizing \texttt{FineZip} at both fine-tune and compression time. A lower precision model allow us to increase batch size and in turn, decrease time needed to compress a file by a sizable amount, while memorization allows us to mitigate the loss of performance due to quantization. Figure \ref{fig:quantization} shows that finetuning/compressing a 4 bit model allows to for a batch size of 70 on one A6000 GPU and a compression time of 67 minutes. This 4x speed up makes \texttt{FineZip} not only a competitive, state of the art compressor outperformning traditional text compression systems by a huge margin, but also the fastest neural network/transformer based compression currently available. 
+
+
+
+%After establishing a baseline for comparison and that the "online" fine-tune step is indeed effective, we focus on evaluating the impact of fine-tuning on compression using 3 different language models: GPT2-XL 1.3B \cite{gpt-2}, LLama-2 7B \cite{llama2}, and LLama-3 8B \cite{llama3}. We assess their compression abilities after employing Low-Rank Adaptation (LoRA) \citep{hu2021lora}. Our primary objectives are to determine how much the fine-tune step can actually help minimize ranks and if the method scales well for different input file sizes. 
+
+
+
+%The results in \ref{fig:finetune-lora} show that increasing the number of fine-tune epochs does indeed result in a lower compression ratio. We found that for all experiments, Llama-2 7B performed the best and achieved a state of the art compression ratio of 0.11835 \cite{mahoney2023}. 
+
+
+
+% The two hyperparameters we optimize for are fine-tune epochs (1, 4, 16, 64) and projection rank \textit{r} (8, 16). The effectiveness of each experiment is evaluated using the following definition of compression ratio:
+% \begin{equation}
+%   \label{eq:example}
+%   \text{Compression\,Ratio} = \frac{\text{Compressed\,File\,Size}}{\text{Input\,File\,Size}}
+% \end{equation}
+%\begin{equation}
+%  \mathrm{Compression Ratio} = \frac{\mathrm{Compressed\ File\ Size}}{\mathrm{Input\ File\ Size}}
+%\end{equation}
+
+% As a post-processing step, \texttt{FineZip} uses a traditional compression algorithm to compress the ranks generated by the LLM, similar to LLMZip. We compare the state-of-the-art compression methods for this task using a 10MB dataset (enwik8), and find that BZ2 performs the best in comparison with LLM generated ranks (Appendix \ref{sec:traditional}). All experiments are done using BZ2 as the traditional compression method. All experiments in this paper are conducted on the 10MB version of the enwik8 dataset unless otherwise specified. All compression was done with a context window of 512 as we found this to give us the best compression ratio (Appendix \ref{sec:context_size})
+
+
+%For the initial tests mentioned above, we use the first 10 megabytes of enwik8 dataset \citep{mahoney2023}, a widely recognized compression benchmark dataset.
+
+%Before we could truly test the effectiveness of the LLM compression, we had to determine which traditional compression technique would be best for compressing the ranks.  
+
+%  Once all the ranks are determined, we need the optimal array compression technique to further compress the ranks and store the resultant file to decompress later.
+
+%To determine the optimal compression technique for ranks, we conduct experiments using Brotli, BZ2, and PPM on the ranks obtained from one configuration setting. Figure 2 shows that compression ratios are pretty similar among these techniques; however, BZ2 was the best and was chosen as the secondary compression technique for \texttt{FineZip}. 
+ % We evaluate SIMD Fast PFOR \citep{Lemire_2013}, Optimal Fast PFOR \citep{glory2015compressing}, and arithmetic coding, ultimately deciding on Optimal Fast PFOR as the most effective array compression technique. We store the compressed array and calculate the compression ratio defined in equation 1 using its file size. 
+
+% \subsection{Dataset Size}
+
+% We aim to determine if dataset size impacts the amount of compression to ensure that LLM compression works well regardless of file size. We test our best fine-tuned configuration from the initial experiments on the first 1, 4, 16, 64, and 100 megabytes of the enwik8 dataset.
+
+% \subsection{\texttt{FineZip} and Quantization}
+
+% During our experiments, we observed that LLM compression is highly computationally expensive and demands significant GPU memory. To investigate whether compressing and decompressing with a quantized version of the original or fine-tuned model would result in a similar compression as the base model, we loaded our best fine-tuned configuration from the first experiment in 4 bits, 8 bits, and 16 bits.
+
+% \subsection{Larger LLMs}
+
+% To determine whether we have reached the upper bound for compression, we decided to experiment with significantly larger LLMs since our initial experiments were with relatively small models. We fine-tuned the 70 billion parameter version of LLama 2 with QLoRA at both 4 and 8-bit precision. During compression, we loaded the model with 8-bit precision.
+
+
+
+% The plots clearly show that the online memorization step of \texttt{FineZip} clearly improves compression over zero-shot usage of LLMs for compression for all language models. Furthermore, the trends of the graphs also suggest that fine-tuning for more epochs enhances compression performance but with diminishing returns after a certain point. The additional trained embeddings are part of the compression package used during decompression. These experiments also show that the rank of fine-tuning with LoRA and QLoRA has little impact on compression. This means that there is still room to experiment with reducing the embedding sizes. Additionally, it is also possible to fine-tune selected layers instead of the entire model to further reduce additional storage. We leave this for future work. 
+
+% Through these experiments, we discover that LLama-2 7B fine-tuned with QLoRA for 64 epochs with $r = 16$ is the best configuration for \texttt{FineZip}, and for all remaining experiments, we use this configuration unless specified otherwise. We further analyze the effect of the size of the data being compressed on the performance of \texttt{FineZip}. The results are shown in Figure \ref{fig:dataset-size}. We see that the performance of \texttt{FineZip} remains relatively constant when compressing files from 1MB to 100MB. The performance as a function of dataset size is similar to traditional compression methods (Appendix \ref{sec:traditional}). 
+
+%After deciding our benchmark, we tested using GPT2-XL, LLama 2 7B, and LLama 3 8B, with LoRA and QLoRA. Several experiments were conducted using different fine-tuning configurations to determine the best number of epochs and projection rank. These experiments also show that the \textit{r} value has very little impact on compression ratio. This means that 
+
+%The key observation from Figures 5 and 6 is that fine-tuning on the text file prior to compressing does improve the compression ratio. Furthermore, the trends of the graphs show that fine-tuning epochs are negatively correlated to compression ratio, suggesting that fine-tuning for more epochs enhances compression performance. These experiments also show that the \textit{r} value has very little impact on the compression ratio. In the scope of \texttt{FineZip} this means that choosing a smaller \textit{r} value is beneficial as it means the fine-tuned weights will take less space in the end. 
+
+% While it is unclear whether \textit{r} affects compression ratio in a certain way, our experiments in Figure 5 and Figure 6 show that LLama 2 and GPT2-XL have improved compression with a higher \textit{r} value. However, LLama 3 tends to result in a higher compression ratio as \textit{r} increases. 
+
+%GPT2-XL, the smallest model we use, also performs worse than the larger, 7 billion parameter models, indicating that model size also plays a role in compression ratio. We also see that the compression ratios for LLama 2 and LLama 3 reach 0.147, which surpasses state-of-the-art compression techniques \citep{Bellard2019LosslessDC}, which have a compression ratio of 0.149. 
+
+%Through these experiments, we discover that \textbf{LLama 2 7B finetuned with QLoRA for 64 epochs with an \textit{r} value of 16} is the best configuration for \texttt{FineZip} and for all remaining experiments, we use this model. 
+
+
+%\subsection{\texttt{FineZip} and Quantization}
+
+% Figures \ref{fig:finetune-lora} and \ref{fig:finetune-qlora} show that there is hardly a difference between LoRA and QLoRA in terms of compression ratio. Therefore, in order to preserve GPU resources and make \texttt{FineZip} less computationally expensive, we experiment with compression at different quantizations at compression time. Specifically, we perform the memorization step with an 8-bit quantized model and perform compression or inference with different quantization levels.
+
+
+% % It makes sense to complete the fine-tune step with some level of quantization. Naturally, we were curious if loading the model with a lower precision would significantly impact the compression ratio. During the compression step, we tried loading the fine-tuned model with 4, 8, 16, and 32-bit precision. Figure 7 shows that loading the model with lower precision doesn't significantly impact the compression performance. 
+
+% The results are shown in Figure \ref{fig:quantization}. We see that \texttt{FineZip} performs just as well at lower quantization precisions showing that the memory footprint for \texttt{FineZip} can be reduced significantly. Additionally, loading in lower precision takes up less GPU memory and, in turn, allows us to increase batch size, which reduces the compression time.
+
+%The past few experiments have shown that in terms of compression ratio, neural network/transformer based compression systems are viable. However, they are still impractical in terms of time. One significant time upgrade we made was the aforementioned dynamic context window which allowed for batched encoding. With full precision models, we were only able to use a batch size of 16. 
+
+%Loading these full precision models ended up taking up significant amounts of GPU memory which ultimately took away from the amount of memory we could use while actually compressing.  Since lower precision models have been shown to have comparable performance to full precision models, we decided to try quantizing \texttt{FineZip} at both fine-tune and compression time. The core idea is that if we are able to see comparable performance, then the lower precision model will allow us to increase batch size and in turn, decrease time needed to compress a file by a sizable amount. Figure \ref{fig:quantization} shows that finetuning/compressing a 4 bit model allows for a batch size of 70 (on a 48gb GPU). 4 bit quantization allows us to compress 10mb in just 67 minutes compared to the usual 250 minutes as shown in \ref{tab:compression_methods}.
+
+%This 4x speed up makes \texttt{FineZip} not only a competitive, state of the art compressor but also the fastest neural network/transformer based compression currently available. 
+
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{llcccccccc}
+%         \toprule
+%         \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{ \textit{r}}} & \multirow{2}{*}{\textbf{Models}} & \multicolumn{4}{c}{\textbf{Number of Epochs}} \\
+%         \cmidrule(lr){4-7}
+%         & & & \textbf{1} & \textbf{4} & \textbf{16} & \textbf{64} \\
+%         \midrule
+%         \multirow{6}{*}{LoRA} & \multirow{3}{*}{8} & GPT2-XL 1.3B & 0.2098 & 0.2076 & 0.2042 & 0.1954 \\
+%         & & LLama 2 7B & 0.1553 & 0.1531 & 0.1499 & 0.1475 \\
+%         & & LLama 3 8B & 0.1612 & 0.1603 & 0.1615 & 0.1430 \\
+%         \cmidrule(lr){2-7}
+%         & \multirow{3}{*}{16} & GPT2-XL 1.3B & 0.2098 & 0.2075 & 0.2041 & 0.1954 \\
+%         & & LLama 2 7B & 0.1553 & 0.1531 & 0.1498 & 0.1472 \\
+%         & & LLama 3 8B & 0.1594 & 0.1582 & 0.1599 & 0.1560 \\
+%         \midrule
+%         \multirow{6}{*}{QLoRA} & \multirow{3}{*}{8} & GPT2-XL 1.3B & 0.2016 & 0.1998 & 0.1974 & 0.1959 \\
+%         & & LLama 2 7B & 0.1558 & 0.1538 & 0.1528 & 0.1476 \\
+%         & & LLama 3 8B & 0.1618 & 0.1582 & 0.1526 & 0.1514 \\
+%         \cmidrule(lr){2-7}
+%         & \multirow{3}{*}{16} & GPT2-XL 1.3B & 0.2016 & 0.1997 & 0.1971 & 0.1947 \\
+%         & & LLama 2 7B & 0.1558 & 0.1537 & 0.1505 & 0.1474 \\
+%         & & LLama 3 8B & 0.1619 & 0.1597 & 0.1555 & 0.1535 \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{Compression ratios for different fine-tuning methods, \textit{r}, models, and epochs.}
+%     \label{tab:results}
+% \end{table*}
+
+%\subsection{Larger Models}
+
+%After conducting several experiments with 7 and 8 billion parameter models, we attempted to compress a text file with the 70 billion parameter LLama 2 variant. The objective was to determine the lowest possible compression ratio we could achieve. After fine-tuning LLama 2 70B with QLoRA (4-bit quantization) and then compressing by loading the model with 16-bit precision, we achieve a compression ratio of \textbf{0.114}. Though this ratio is far better than state-of-the-art, the caveat is that the fine-tuned weights themselves take up 126 megabytes. Thus, in order to justify using a larger model for better performance, the input file size would have to be big enough for an additional 126 megabytes of storage to be negligible.
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.85\linewidth]{time.png} % Adjust the width as needed
+%     \centering
+%     \caption{Measuring compression time (in hours) for input file sizes of 1, 4, 16, 64, and 100 megabytes}
+%     \centering
+%     \label{fig:time}
+%     \centering
+% \end{figure}
+
+\section{Conclusion}
+In this paper we explore the possibility of using LLMs for lossless text compression. We show that while using neural network and LLM based text compression systems lead to significantly better compression rates, they also require impractical amounts of compression time. To alleviate this, we introduce \texttt{FineZip} - an LLM-based lossless text compression system which compresses text 54 times faster than LLMZip with a minor loss in compression performance. \texttt{FineZip} also improves on the compression ratio of traditional text compression systems by approximately 50\%. We also show that while \texttt{FineZip} presents a significant step in making practical text compression systems using LLMs, much still needs to be done. We hope our work can serve as a stepping stone in that direction. 
+
+% So far, we've shown that fine-tuning on the data being compressed improves compression performance in the form of \texttt{FineZip}, with various possible avenues for optimizing performance and accounting for the additional storage due to PEFT embeddings. In this section, we analyze if compression systems like \texttt{FineZip} and LLMZip are practical solutions for text compression. To test this, we measure the time taken to compress a file using \texttt{FineZip} as a function of the size of the file.
+
+% Figure \ref{fig:time} shows that the time taken to compress a file of size 100MB, which contains a few million tokens, takes approximately 40 hours when compression is done using a batch size of 1. This is not a limitation of the fine-tuning step, which is usually very quick, but a fundamental limitation of using LLMs for prediction.
+
+% We have used a batch size of 1 to provide symmetry between the compression and decompression processes. While compression can be sped up and done in parallel with multiple batches, \textbf{decompression can only be done using a batch size of 1}. Though the compression ratios of \texttt{FineZip} are far better than state-of-the-art systems, they come nowhere near the efficiency of other comparable compression techniques.  
+
+%In this section we evaluate feasibility of current transformer based compression systems. NNCP \cite{Bellard2021NNCPVL} achieves a solid compression ratio but in order to decompress, you would have to save the weights of the model that is trained during compression time. This extra memory paired with the 40+ hour compression time makes it impractical. Though LLMZip seems to achieve the best compression ratio, its fixed context size and inability to incorporate batching makes it impractical to use on a frequent basis. Full precision \texttt{FineZip} allows for batched encoding/decoding and achieves excellent compression ratio, but still takes very long. 
+
+%Experiments in \ref{fig:quantization} show that a model fine-tuned/loaded in 4 bit achieves a low compression ratio and is completed about 4 times faster than its full precision counterpart. Not to mention, the stored weights from QLoRA \cite{dettmers2023qlora} end up taking less space than the LoRA weights because of the quantization. All in all, we propose that for LLM based compression to be viable, a dynamic context window along with heavy quantization would be required to allow for heavy batching. 
+
+%It's also worth noting that the low precision models performing so well is another indicator of how well-suited LLMs are for the lossless compression objective. 
+
+% We then compare the time it took to compress a 10MB dataset across different methods, including Finezip with Rank, Finezip with arithmetic coding, LLMZip with rank, LLMZip with arithmetic coding, and NNCP. Figure 7 (create a bar graph?) demonstrates the compression time for each technique. We used a batch size of 16 for Finezip but only a batch size of 1 for LLMZip due to its limitation. By achieving the same level of compression ratios, Finezip with rank is much more time efficient than the other methods.
+% I THINK ADD THIS PARAGRAPH IN HERE SOMEWHERE AND INCLUDE A PLOT FOR IT
+
+\section{Limitations}
+LLM-based text compression systems assume a GPU being available in the host machine for local compression. While this is not true for every personal computer, the landscape is rapidly changing. Many personal laptops are now equipped with GPUs and as compute becomes cheaper and the power of LLMs grow, we envision a future where every personal computer will be equipped with an LLM running locally and performing various tasks.
+
+%being present but looks like laptops have an increasingly growing gpu memory in
+
+
+%While \texttt{FineZip} achieves state-of-the-art compression ratios, the compute that it requires is substantial in comparison to other, more lightweight techniques. All experiments were run on a GPU with 48GB of memory but the reality is that most people do not have machines with that level of compute. For LLM-based compression to be practical, smaller LLMs that employ heavy quantization would have to be used. The time LLM-based compression takes also makes it impractical as it is significantly slower than simpler, off the shelf techniques. Though quantization does allow for a major speedup, the auto-regressive nature of LLMs makes processing larger files a several hour long task. 
+
+% While \texttt{FineZip} achieves state-of-the-art compression ratios, the compute that it requires is substantial in comparison to other more lightweight techniques. The larger the LLM being used, the more GPU compute is needed both for the fine-tuning and the compression. Not to mention that storing an LLM housing billions of parameters also requires several gigabytes of storage. Thus, when using LLM based compression methods, one needed to consider the added memory for the model and weights itself, which limits them to be only suitable for compressing huge files as the model storage would not scale with file sizes. Lastly, due to the auto-regressive nature of the models, compression time is a major limitation. Though quantization does allow for a major speedup, LLM based techniques are still incomparable to conventional methods in terms of pure speed. 
+
+%In this paper, we gauge the viability of LLM based compression systems using two metrics: compression ratio and time to compress.
+
+%The experiments in Figure 8 indicate that the compression ratio remains largely the same across regardless of input file size. This means that LLM compression is a viable technique for large or even small input files. It is important to note that the fine-tuned weights, once stored, do occupy a small amount of memory. The larger the model, the more memory these fine-tuned weights occupy, as a higher percentage of the weights are trained with LoRA or QLoRA. 
+
+%Figure 9 shows that the time to compress linearly increases with respect to input file size. This means that we can reliably predict the time it takes to compress much larger files if needed. More importantly, however, this experiment also shows that \texttt{FineZip} and other LLM based compression techniques \texttt{may not be feasible} for everyday use just yet. Having to wait 40 hours for a 100 megabyte file to compress and then another 40 hours to decompress is impractical. While the compression ratios are far better than state-of-the-art systems, they come nowhere near the efficiency of other comparable compression techniques. 
+
+%Fundamentally, the characteristic that makes LLMs infeasible for text compression is their auto-regressive nature, which allows them to predict only one token at a time. Fortunately, there is work being done on LLMs predicting more than one token at a time \citep{gloeckle2024better}. There is also the possibility of using masked language models which do not have to predict tokens sequentially, allowing for batching and parallelization. 
+
+%\section{Conclusion}
+
+%Through these series of experiments, the use of LLMs for text compression has been methodically proved and validated to be state-of-the-art. LLMs have performed better than traditional techniques (Brotli, BZ2, PPM) by a significant margin, indicating that they have the potential for contesting the current best compression techniques.
+
+% Building on the traditional LLMZip \citep{valmeekam2023llmzip} technique, \texttt{FineZip}'s additional fine-tuning step prior to compression decreases the compression ratio by a noticeable margin. 
+
+
+% Through these experiments, we developed a robust compression pipeline using LLMs that involved fine-tuning an LLM on the input file and then having the LLM sequentially predict the next token in the file with a fixed window of prior context. By storing the rank at which the real next token appears in the model's predictions, we end up with an array of ranks that are generally low value numbers. We then use a specialized array compression algorithm called Optimal Fast PFOR to even further compress the ranks. 
+
+%The key discovery made is that fine-tuning a model, even for a few epochs, can significantly improve its ability to perform lossless text compression. From there, the optimal fine-tuning configuration was discovered and then a series of tests were made to evaluate the robustness of the compression algorithm. These include testing the LLM loaded with different precisions and on different input file sizes. 
+
+%These tests prove that \texttt{FineZip} is almost a viable compression technique. Though it reaches state-of-the-art compression ratios, some setbacks with LLM compression were discovered that cannot be overlooked. The most glaring realization is that LLM compression is still largely impractical for everyday use. While it offers better compression, the LLM takes an unreasonable time to compress a 100 megabyte file. Furthermore, compression with the LLM is computationally expensive and intensive on a system's GPU. 
+
+%Even if \texttt{FineZip} and other LLM based compression techniques are currently infeasible, their compression capabilities need to be showcased. As LLMs continue to evolve, their application in text compression can result in more efficient storage and transmission of information.
+
+
+% ----
+
+% By leveraging the predictive capabilities of finetuned LLMs, we were able to achieve compression ratios that surpass traditional methods while preserving the original text. Our experiments confirmed that finetuning enhances compression performance, with more epochs leading to better results. Additionally, loading models with lower precision can reduce memory and time requirements without a significant reduction in compression quality. 
+
+% The scalability of LLM compression is robust, as compression remains effective at various dataset sizes. Experiments with larger models, such as LLama 2 and LLama 3, show that using models with more weights could further improve compression ratios. However, increased computational costs, memory requirements, and time pose challenges that need to be addressed for practical applications. 
+
+% Further work could explore using LLMs that generate tokens faster and more efficiently, like GPT 4o, to enhance compression practicality and efficiency. As LLMs continue to evolve, their application in text compression can result in more efficient storage and transmission of information. 
+
+
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{llcccccccc}
+%         \toprule
+%         \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{ \textit{r}}} & \multirow{2}{*}{\textbf{Models}} & \multicolumn{4}{c}{\textbf{Number of Epochs}} \\
+%         \cmidrule(lr){4-7}
+%         & & & \textbf{1} & \textbf{4} & \textbf{16} & \textbf{64} \\
+%         \midrule
+%         \multirow{6}{*}{LoRA} & \multirow{3}{*}{8} & GPT2-XL 1.3B & 0.2098 & 0.2076 & 0.2042 & 0.1954 \\
+%         & & LLama 2 7B & 0.1553 & 0.1531 & 0.1499 & 0.1475 \\
+%         & & LLama 3 8B & 0.1612 & 0.1603 & 0.1615 & 0.1430 \\
+%         \cmidrule(lr){2-7}
+%         & \multirow{3}{*}{16} & GPT2-XL 1.3B & 0.2098 & 0.2075 & 0.2041 & 0.1954 \\
+%         & & LLama 2 7B & 0.1553 & 0.1531 & 0.1498 & 0.1472 \\
+%         & & LLama 3 8B & 0.1594 & 0.1582 & 0.1599 & 0.1560 \\
+%         \midrule
+%         \multirow{6}{*}{QLoRA} & \multirow{3}{*}{8} & GPT2-XL 1.3B & 0.2016 & 0.1998 & 0.1974 & 0.1959 \\
+%         & & LLama 2 7B & 0.1558 & 0.1538 & 0.1528 & 0.1476 \\
+%         & & LLama 3 8B & 0.1618 & 0.1582 & 0.1526 & 0.1514 \\
+%         \cmidrule(lr){2-7}
+%         & \multirow{3}{*}{16} & GPT2-XL 1.3B & 0.2016 & 0.1997 & 0.1971 & 0.1947 \\
+%         & & LLama 2 7B & 0.1558 & 0.1537 & 0.1505 & 0.1474 \\
+%         & & LLama 3 8B & 0.1619 & 0.1597 & 0.1555 & 0.1535 \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{Compression ratios for different methods, \textit{r}, models, and epochs.}
+%     \label{tab:results}
+% \end{table*}
+
+
+
+
+% Bibliography entries for the entire Anthology, followed by custom entries
+%\bibliography{anthology,custom}
+% Custom bibliography entries only
+\bibliography{custom}
+
+\newpage
+\appendix
+
+\section{Appendix}
+
+\subsection{Evaluating Traditional Compression Methods}\label{sec:traditional}
+We first experimented with three traditional compression methods - Brotli \citep{brotli}, BZ2 \citep{bzip2}, and PPM \citep{1096090} - for text compression as a function of increasing dataset size. We find that PPM performs best for text compression, and that the performance remains relatively constant with respect to dataset size. The results can be seen in Figure \ref{fig:traditional-text}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{baseline_comp.png} % Adjust the width as needed
+    \centering
+    \caption{Evaluating Baseline Compression Techniques Brotli, BZ2, and PPM on enwik8}
+    \centering
+    \label{fig:traditional-text}
+    \centering
+\end{figure}
+
+We then use these algorithms to compress the ranks generated by LLMs in \texttt{FineZip}. We see that BZ2 has the best performance so we chose it as the traditional compression method for \texttt{FineZip}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{trad_new.png} % Adjust the width as needed
+    \centering
+    \caption{Testing Traditional Compression Techniques Brotli, BZ2, and PPM on the ranks produced by compressing enwik8 with LLama2-7B finetuned for 64 epochs with r=16}
+    \centering
+    \label{fig:traditional-ranks}
+    \centering
+\end{figure}
+
+
+\subsection{Double Compression Benchmark}
+
+Prior to testing \texttt{FineZip}, we compressed the enwik8 \cite{enwik8} dataset using traditional compression techniques (Brotli, BZ2, PPM) to create a benchmark for ourselves. Figure 3 shows that Brotli, BZ2, and PPM perform consistently across varying input file sizes and that PPM performs the best on textual data, reaching a compression ratio of approximately 0.25. Figure 4 measures the compression ratio when two compression techniques are stacked and serves as a more accurate benchmark for \texttt{FineZip} as it also employs two step compression. Through these set of baseline experiments, we can see that a compression ratio of 0.25 is the value to beat. 
+
+% \texttt{FineZip} actually employs a two step compression: first, converting text into ranks, and then compressing the ranks. Figure 3 provides a fair benchmark by stacking different compression techniques to compare with FineZip's two-stage compression performance. It is evident and expected that the double compression improves the compression ratio.  
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{double_compression.png} % Adjust the width as needed
+    \centering
+    \caption{Evaluating Stacked Compression with Brotli, BZ2, and PPM on enwik8}
+    \centering
+    \label{fig:double-compression}
+    \centering
+\end{figure}
+
+\subsection{Context Size} \label{sec:context_size}
+
+To determine the best context window size to use, we ran experiments with the LLama2-7B base model (LLMZip) and discovered that a larger context size results in a better compression ratio. The compression ratio began to plateau as the context window reached 512 so we decided to use that for all of our experimentation. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{context_size.png} % Adjust the width as needed
+    \centering
+    \caption{Evaluating Best Context Window for Compression}
+    \centering
+    \label{fig:double-compression}
+    \centering
+\end{figure}
+
+
+
+\subsection{\texttt{FineZip} and Dataset Size}
+
+The previous experiments were only using a dataset size of 10mb and for this to be a viable compression technique, it has to scale well for much smaller and larger file sizes. Figure \ref{fig:dataset-size} shows that LLama-3 8B \cite{llama3} fine-tuned for 256 epochs maintains a consistent compression ratio on dataset sizes of 1, 10, and 100mb. This verifies that \texttt{FineZip} remains viable regardless of dataset size. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{dataset_size_new.png} % Adjust the width as needed
+    \centering
+    \caption{Compressing input files of size 1, 10, and 100 megabytes with LLama-3 8B finetuned for 256 epochs.}
+    \centering
+    \label{fig:dataset-size}
+    \centering
+\end{figure}
+
+
+
+\end{document}
