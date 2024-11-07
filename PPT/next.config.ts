@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
-    domains: ['your-image-domain.com'], // 如果有外部图片源
-  },
-  // 其他配置...
+    unoptimized: true,
+    domains: ['your-image-domain.com']
+  }
 };
 
 export default nextConfig;
