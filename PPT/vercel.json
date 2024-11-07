@@ -1,4 +1,5 @@
 {
-  "name": "finezip-presentation",
-  "root": "PPT"
+  "buildCommand": "cd PPT && npm run build",
+  "outputDirectory": "PPT/.next",
+  "installCommand": "cd PPT && npm install"
 } 
