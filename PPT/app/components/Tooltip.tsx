@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { Info } from 'lucide-react';
 
 interface TooltipProps {
   children: React.ReactElement;
@@ -12,10 +13,11 @@ export const Tooltip: React.FC<TooltipProps> = ({ children, content }) => {
   return (
     <>
       <div 
-        className="inline-block cursor-pointer"
+        className="inline-flex items-center gap-1 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
         {children}
+        <Info className="w-4 h-4 text-blue-500" />
       </div>
 
       <Modal 
